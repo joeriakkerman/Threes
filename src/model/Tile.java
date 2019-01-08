@@ -13,6 +13,12 @@ public class Tile {
 		score = 0;
 	}
 	
+	public Tile(int x, int y, int score) {
+		this.x = x;
+		this.y = y;
+		this.score = score;
+	}
+	
 	public int getX() {
 		return x;
 	}

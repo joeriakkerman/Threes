@@ -16,9 +16,31 @@ public class GameController {
 	public GameController() {
 		gameModel = new GameModel();
 		mouse = new Mouse();
-		keyboard = new Keyboard();
+		keyboard = new Keyboard(new Keyboard.IKeyboard() {
+			
+			@Override
+			public void up() {
+				canvas.transform(-1, false);
+			}
+			
+			@Override
+			public void right() {
+				canvas.transform(1, true);
+			}
+			
+			@Override
+			public void left() {
+				canvas.transform(-1, true);
+			}
+			
+			@Override
+			public void down() {
+				canvas.transform(1, false);
+			}
+		});
 		canvas = new Canvas(mouse, keyboard, gameModel);
 		gameModel.addObserver(canvas);
+		gameModel.setScore(canvas.getTotalScore());
 	}
 
 }
