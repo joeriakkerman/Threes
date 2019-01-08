@@ -68,7 +68,6 @@ public class Canvas extends JPanel implements Observer {
 		frame.addMouseListener(mouse);
 		frame.addKeyListener(keyboard);
 		frame.setResizable(false);
-		frame.setTitle("Current Score: 0");
 		frame.add(this);
 		frame.add(infoBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -113,6 +112,7 @@ public class Canvas extends JPanel implements Observer {
 	
 	public void transform(int offset, boolean horizontal) {
 		if(board.transform(offset, horizontal)) {
+			//add tile in that row/column
 			model.addStep();
 			model.setScore(board.getTotalScore());
 			if(horizontal) {
@@ -125,8 +125,4 @@ public class Canvas extends JPanel implements Observer {
 		}
 	}
 	
-	public int getTotalScore() {
-		return board.getTotalScore();
-	}
-
 }

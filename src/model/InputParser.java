@@ -12,23 +12,30 @@ public class InputParser {
 	public Board readInput() {
 		int columns = 0, rows = 0;
 		try {
-			List<String> lines = Files.readAllLines(Paths.get(getClass().getClassLoader().getResource("input.txt").toURI()));//Paths.get(getClass().getResource("/input.txt").getFile()
+			List<String> lines = Files.readAllLines(Paths.get(getClass().getClassLoader().getResource("input.txt").toURI()));
 			List<Tile> tiles = new ArrayList<Tile>();
 			for(String line : lines) {
 				String[] arr = line.split(" ");
 				if(arr.length != 3) {
 					return null;
 				}
+				
 				int y = Integer.parseInt(arr[0]);
+				if(y < 0) return null;
 				int x = Integer.parseInt(arr[1]);
+				if(x < 0) return null;
 				int score = Integer.parseInt(arr[2]);
+				if(score < 0) return null;
+				
 				if(x > columns) columns = x;
 				if(y > rows) rows = x;
+				
 				tiles.add(new Tile(x, y, score));
 			}
 			if(tiles.size() > 0) {
 				columns++;
 				rows++;
+				if(tiles.size() != columns * rows) return null;
 				Board board = new Board(columns, rows);
 				for(Tile tile : tiles) {
 					board.setScore(tile.getY() * columns + tile.getX(), tile.getScore());
