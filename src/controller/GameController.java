@@ -40,6 +40,8 @@ public class GameController {
 		});
 		canvas = new Canvas(mouse, keyboard, gameModel);
 		gameModel.addObserver(canvas);
+		
+		new SoundController();
 	}
 
 }

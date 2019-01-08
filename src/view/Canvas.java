@@ -17,11 +17,11 @@ import java.util.Random;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
+import controller.InputParser;
 import input.Keyboard;
 import input.Mouse;
 import model.Board;
 import model.GameModel;
-import model.InputParser;
 import model.Tile;
 
 @SuppressWarnings("serial")
@@ -50,6 +50,8 @@ public class Canvas extends JPanel implements Observer {
 			for(int i = 0; i < 7; i++) {
 				board.setScore(random.nextInt(amount), random.nextInt(3) + 1);
 			}
+		}else if(board.gameOver()) {
+			System.out.println("gameOver!!!");
 		}
 		board.addObserver(this);
 		this.model.setScore(board.getTotalScore());
@@ -112,7 +114,6 @@ public class Canvas extends JPanel implements Observer {
 	
 	public void transform(int offset, boolean horizontal) {
 		if(board.transform(offset, horizontal)) {
-			//add tile in that row/column
 			model.addStep();
 			model.setScore(board.getTotalScore());
 			if(horizontal) {
@@ -121,6 +122,9 @@ public class Canvas extends JPanel implements Observer {
 			}else {
 				if(offset > 0) infoBar.update(model.getSteps(), "Hands DOWN!");
 				else if(offset < 0) infoBar.update(model.getSteps(), "Hands UP!");
+			}
+			if(board.gameOver()) {
+				System.out.println("gameOver!!!");
 			}
 		}
 	}

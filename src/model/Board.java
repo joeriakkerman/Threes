@@ -1,6 +1,9 @@
 package model;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
+import java.util.Random;
 
 import view.Canvas;
 
@@ -38,6 +41,7 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
+				if(transformed) addRandomTileToColumn(0);
 			}else {//down
 				for(int x = 0; x < columns; x++) {
 					for(int y = rows - 2; y >= 0; y--) {
@@ -45,6 +49,7 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
+				if(transformed) addRandomTileToRow(0);
 			}
 		}else if(offset < 0) {
 			if(horizontal) {//left
@@ -54,6 +59,7 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
+				if(transformed) addRandomTileToColumn(columns-1);
 			}else {//up
 				for(int x = 0; x < columns; x++) {
 					for(int y = 1; y < rows; y++) {
@@ -61,6 +67,7 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
+				if(transformed) addRandomTileToRow(rows-1);
 			}
 		}
 		
@@ -69,6 +76,34 @@ public class Board extends Observable {
 			notifyObservers();
 		}
 		return transformed;
+	}
+	
+	private void addRandomTileToRow(int row) {
+		List<Integer> ids = new ArrayList<Integer>();
+		for(int i = 0; i < columns; i++) {
+			if(tiles[row * columns + i].getScore() == 0) ids.add(row * columns + i);
+		}
+		
+		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(1 + new Random().nextInt(3));
+	}
+	
+	private void addRandomTileToColumn(int column) {
+		List<Integer> ids = new ArrayList<Integer>();
+		for(int i = 0; i < rows; i++) {
+			if(tiles[i * columns + column].getScore() == 0) ids.add(i * columns + column);
+		}
+		
+		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(1 + new Random().nextInt(3));
+	}
+	
+	public boolean gameOver() {
+		Tile[] tmp = new Tile[tiles.length];
+		for(int i = 0; i < tiles.length; i++) tmp[i] = new Tile(tiles[i].getX(), tiles[i].getY(), tiles[i].getScore());
+		if(!transform(1, true) && !transform(-1, true) && !transform(1, false) && !transform(-1, false)) return true;
+		else {
+			tiles = tmp;
+			return false;
+		}
 	}
 	
 	public int getTotalScore() {
