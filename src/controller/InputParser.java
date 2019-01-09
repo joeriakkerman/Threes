@@ -31,7 +31,7 @@ public class InputParser {
 				if(score < 0) return null;
 				
 				if(x > columns) columns = x;
-				if(y > rows) rows = x;
+				if(y > rows) rows = y;
 				
 				tiles.add(new Tile(x, y, score));
 			}

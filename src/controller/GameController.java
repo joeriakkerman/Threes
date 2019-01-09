@@ -15,7 +15,15 @@ public class GameController {
 	
 	public GameController() {
 		gameModel = new GameModel();
-		mouse = new Mouse();
+		
+		mouse = new Mouse(new Mouse.IMouse() {
+			
+			@Override
+			public void onSwipe(int offset, boolean horizontal) {
+				canvas.transform(offset, horizontal);
+			}
+		});
+
 		keyboard = new Keyboard(new Keyboard.IKeyboard() {
 			
 			@Override
@@ -38,6 +46,7 @@ public class GameController {
 				canvas.transform(1, false);
 			}
 		});
+		
 		canvas = new Canvas(mouse, keyboard, gameModel);
 		gameModel.addObserver(canvas);
 		

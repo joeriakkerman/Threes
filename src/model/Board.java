@@ -11,6 +11,7 @@ public class Board extends Observable {
 	
 	private Tile[] tiles;
 	private int tileSize, columns, rows;
+	private int nextTile;
 	
 	public Board(int columns, int rows) {
 		this.columns = columns;
@@ -29,9 +30,10 @@ public class Board extends Observable {
 				tiles[y * columns + x] = new Tile(x, y);
 			}
 		}
+		initNextRandomTile();
 	}
 	
-	public boolean transform(int offset, boolean horizontal) {
+	public boolean transform(int offset, boolean horizontal, boolean test) {
 		boolean transformed = false;
 		if(offset > 0) {
 			if(horizontal) {//right
@@ -71,11 +73,21 @@ public class Board extends Observable {
 			}
 		}
 		
-		if(transformed) {
+		if(transformed && !test) {
 			setChanged();
 			notifyObservers();
 		}
 		return transformed;
+	}
+	
+	public void initNextRandomTile() {
+		nextTile = 1 + new Random().nextInt(3);
+		setChanged();
+		notifyObservers();
+	}
+	
+	public int getScoreFromNextTile() {
+		return nextTile;
 	}
 	
 	private void addRandomTileToRow(int row) {
@@ -84,7 +96,7 @@ public class Board extends Observable {
 			if(tiles[row * columns + i].getScore() == 0) ids.add(row * columns + i);
 		}
 		
-		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(1 + new Random().nextInt(3));
+		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(nextTile);
 	}
 	
 	private void addRandomTileToColumn(int column) {
@@ -93,13 +105,13 @@ public class Board extends Observable {
 			if(tiles[i * columns + column].getScore() == 0) ids.add(i * columns + column);
 		}
 		
-		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(1 + new Random().nextInt(3));
+		if(ids.size() > 0) tiles[ids.get(new Random().nextInt(ids.size()))].setScore(nextTile);
 	}
 	
 	public boolean gameOver() {
 		Tile[] tmp = new Tile[tiles.length];
 		for(int i = 0; i < tiles.length; i++) tmp[i] = new Tile(tiles[i].getX(), tiles[i].getY(), tiles[i].getScore());
-		if(!transform(1, true) && !transform(-1, true) && !transform(1, false) && !transform(-1, false)) return true;
+		if(!transform(1, true, true) && !transform(-1, true, true) && !transform(1, false, true) && !transform(-1, false, true)) return true;
 		else {
 			tiles = tmp;
 			return false;
@@ -115,7 +127,7 @@ public class Board extends Observable {
 	private boolean transformTile(Tile tile, Tile destination) {
 		if(tile.getScore() == 0) return false;
 		if(destination.getScore() > 0) {
-			if((destination.getScore() == tile.getScore() && destination.getScore() + tile.getScore() >= 3) || destination.getScore() + tile.getScore() == 3) {
+			if((destination.getScore() == tile.getScore() && destination.getScore() + tile.getScore() >= 6) || destination.getScore() + tile.getScore() == 3) {
 				destination.setScore(destination.getScore() + tile.getScore());
 				tile.setScore(0);
 			}else return false;

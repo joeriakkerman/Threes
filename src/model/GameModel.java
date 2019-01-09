@@ -19,6 +19,10 @@ public class GameModel extends Observable {
 		notifyObservers();
 	}
 	
+	public void setSteps(int steps) {
+		this.steps = steps;
+	}
+	
 	public void setDirection(String direction) {
 		this.direction = direction;
 	}

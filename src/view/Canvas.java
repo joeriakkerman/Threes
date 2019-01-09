@@ -10,11 +10,14 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.InputParser;
@@ -31,6 +34,7 @@ public class Canvas extends JPanel implements Observer {
 	
 	private Board board;
 	private InfoBar infoBar;
+	private TopMenu topMenu;
 	private GameModel model;
 	
 	public static int WIDTH, HEIGHT;
@@ -43,19 +47,12 @@ public class Canvas extends JPanel implements Observer {
 		
 		InputParser parser = new InputParser();
 		board = parser.readInput();
-		if(board == null) {
-			board = new Board(4, 4);
-			Random random = new Random();
-			int amount = board.getColumns() * board.getRows();
-			for(int i = 0; i < 7; i++) {
-				board.setScore(random.nextInt(amount), random.nextInt(3) + 1);
-			}
-		}else if(board.gameOver()) {
-			System.out.println("gameOver!!!");
-		}
+		if(board == null) reset();
+		
 		board.addObserver(this);
 		this.model.setScore(board.getTotalScore());
 		infoBar = new InfoBar(200);
+		topMenu = new TopMenu(board.getTileSize());
 		
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
@@ -66,22 +63,26 @@ public class Canvas extends JPanel implements Observer {
 			}
 		});
 		frame.setLayout(new FlowLayout());
-		frame.setSize(WIDTH, HEIGHT + infoBar.getHeight());
+		frame.setSize(WIDTH, HEIGHT + infoBar.getHeight() + topMenu.getHeight());
 		frame.addMouseListener(mouse);
 		frame.addKeyListener(keyboard);
 		frame.setResizable(false);
+		frame.add(topMenu);
 		frame.add(this);
 		frame.add(infoBar);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.getContentPane().setBackground(Color.BLACK);
+		
+		if(board.gameOver()) showGameOver();
 	}
 
 	@Override
 	public void update(Observable obs, Object obj) {
 		frame.setTitle("Current Score: " + model.getScore());
 		infoBar.update(model.getSteps(), model.getDirection());
+		topMenu.setScore(board.getScoreFromNextTile());
 		repaint();
 	}
 
@@ -112,8 +113,9 @@ public class Canvas extends JPanel implements Observer {
 	    g.drawString(s, x, y);
 	}
 	
-	public void transform(int offset, boolean horizontal) {
-		if(board.transform(offset, horizontal)) {
+	public void transform(int offset, boolean horizontal) { //het is nu zo ingesteld dat wanneer je niet kan bewegen er niks gebeurd, maar misschien is het wel de bedoeling dat er dan alnog een tile bijkomt op een vrije positie....
+		if(board.transform(offset, horizontal, false)) {
+			board.initNextRandomTile();
 			model.addStep();
 			model.setScore(board.getTotalScore());
 			if(horizontal) {
@@ -123,10 +125,37 @@ public class Canvas extends JPanel implements Observer {
 				if(offset > 0) infoBar.update(model.getSteps(), "Hands DOWN!");
 				else if(offset < 0) infoBar.update(model.getSteps(), "Hands UP!");
 			}
-			if(board.gameOver()) {
-				System.out.println("gameOver!!!");
-			}
+			if(board.gameOver()) showGameOver();
 		}
+	}
+	
+	private void showGameOver() {
+		int result = JOptionPane.showOptionDialog(frame, "You scored " + board.getTotalScore() + " points" + System.lineSeparator() + "Would you like to play again?", "Game Over",
+				JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+		
+		if(result == JOptionPane.YES_OPTION) {
+			reset();
+			board.addObserver(this);
+			this.model.setScore(board.getTotalScore());
+			update(null, null);
+		} else {
+			frame.dispatchEvent(new WindowEvent(frame, WindowEvent.WINDOW_CLOSING));
+		}
+	}
+	
+	private void reset() {
+		board = new Board(4, 4);
+		Random random = new Random();
+		List<Tile> tiles = new ArrayList<Tile>();
+		Tile[] bt = board.getTiles();
+		for(int i = 0; i < bt.length; i++)
+			tiles.add(bt[i]);
+		for(int i = 0; i < 7; i++) {
+			Tile t = tiles.get(random.nextInt(tiles.size()));
+			board.setScore(t.getY() * board.getColumns() + t.getX(), random.nextInt(3) + 1);
+			tiles.remove(t);
+		}
+		model.setSteps(0);
 	}
 	
 }
