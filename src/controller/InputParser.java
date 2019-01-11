@@ -1,12 +1,11 @@
 package controller;
 
+import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.URISyntaxException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +17,17 @@ public class InputParser {
 	public Board readInput() {
 		int columns = 0, rows = 0;
 		try {
-			List<String> lines = Files.readAllLines(Paths.get(getClass().getClassLoader().getResource("input.txt").toURI()));
+			List<String> lines = new ArrayList<String>();
+			//BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("/input.txt")));
+			BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/input.txt")));
+			
+			
+			String s;
+			while((s = br.readLine()) != null){
+			     lines.add(s);
+			}
+			br.close();
+			
 			List<Tile> tiles = new ArrayList<Tile>();
 			for(String line : lines) {
 				String[] arr = line.split(" ");
@@ -56,10 +65,6 @@ public class InputParser {
 			System.err.println("Could not parse file input.txt");
 			e.printStackTrace();
 			return null;
-		} catch (URISyntaxException e) {
-			System.err.println("Could not read file input.txt");
-			e.printStackTrace();
-			return null;
 		}
 	}
 	
@@ -72,7 +77,7 @@ public class InputParser {
 		}
 		
 		try {
-			PrintWriter writer = new PrintWriter(new FileOutputStream("res/input.txt", false));
+			PrintWriter writer = new PrintWriter(new File(Main.class.getResource("/input.txt").getPath()));
 			writer.print(txt);
 			writer.close();
 		} catch (FileNotFoundException e) {
