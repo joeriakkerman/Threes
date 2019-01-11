@@ -43,7 +43,6 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
-				if(transformed) addRandomTileToColumn(0);
 			}else {//down
 				for(int x = 0; x < columns; x++) {
 					for(int y = rows - 2; y >= 0; y--) {
@@ -51,7 +50,6 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
-				if(transformed) addRandomTileToRow(0);
 			}
 		}else if(offset < 0) {
 			if(horizontal) {//left
@@ -61,7 +59,6 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
-				if(transformed) addRandomTileToColumn(columns-1);
 			}else {//up
 				for(int x = 0; x < columns; x++) {
 					for(int y = 1; y < rows; y++) {
@@ -69,7 +66,6 @@ public class Board extends Observable {
 						if(!transformed && b) transformed = b;
 					}
 				}
-				if(transformed) addRandomTileToRow(rows-1);
 			}
 		}
 		
@@ -78,6 +74,16 @@ public class Board extends Observable {
 			notifyObservers();
 		}
 		return transformed;
+	}
+	
+	public void addNextTile(int xo, boolean horizontal) {
+		if(horizontal) {
+			if(xo > 0) addRandomTileToColumn(0);
+			else if(xo < 0) addRandomTileToColumn(columns-1);
+		}else {
+			if(xo > 0) addRandomTileToRow(0);
+			else if(xo < 0) addRandomTileToRow(rows-1);
+		}
 	}
 	
 	public void initNextRandomTile() {

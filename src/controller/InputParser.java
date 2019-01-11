@@ -1,6 +1,9 @@
 package controller;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -67,14 +70,13 @@ public class InputParser {
 			txt += tile.getY() + " " + tile.getX() + " " + tile.getScore();
 			if(i < tiles.length - 1) txt += System.lineSeparator();
 		}
+		
 		try {
-			Files.write(Paths.get(getClass().getClassLoader().getResource("input.txt").toURI()), txt.getBytes());
-		} catch (IOException e) {
-			System.err.println("Could not write to file input.txt");
-			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			System.err.println("Could not write to file input.txt");
-			e.printStackTrace();
+			PrintWriter writer = new PrintWriter(new FileOutputStream("res/input.txt", false));
+			writer.print(txt);
+			writer.close();
+		} catch (FileNotFoundException e) {
+			System.err.print("Could not write to file input.txt");
 		}
 	}
 

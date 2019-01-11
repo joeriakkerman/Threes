@@ -53,6 +53,7 @@ public class Canvas extends JPanel implements Observer {
 		this.model.setScore(board.getTotalScore());
 		infoBar = new InfoBar(200);
 		topMenu = new TopMenu(board.getTileSize());
+		topMenu.setScore(board.getScoreFromNextTile());
 		
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
@@ -113,20 +114,23 @@ public class Canvas extends JPanel implements Observer {
 	    g.drawString(s, x, y);
 	}
 	
-	public void transform(int offset, boolean horizontal) { //het is nu zo ingesteld dat wanneer je niet kan bewegen er niks gebeurd, maar misschien is het wel de bedoeling dat er dan alnog een tile bijkomt op een vrije positie....
+	public void transform(int offset, boolean horizontal) {
 		if(board.transform(offset, horizontal, false)) {
-			board.initNextRandomTile();
-			model.addStep();
-			model.setScore(board.getTotalScore());
 			if(horizontal) {
-				if(offset > 0) infoBar.update(model.getSteps(), "That's RIGHT!");
-				else if(offset < 0) infoBar.update(model.getSteps(), "That's LEFT!");
+				if(offset > 0) model.setDirection("That's RIGHT!");
+				else if(offset < 0) model.setDirection("That's LEFT!");
 			}else {
-				if(offset > 0) infoBar.update(model.getSteps(), "Hands DOWN!");
-				else if(offset < 0) infoBar.update(model.getSteps(), "Hands UP!");
+				if(offset > 0) model.setDirection("Hands DOWN!");
+				else if(offset < 0) model.setDirection("Hands UP!");
 			}
-			if(board.gameOver()) showGameOver();
+			infoBar.update(model.getSteps(), model.getDirection());
 		}
+		
+		board.addNextTile(offset, horizontal);
+		board.initNextRandomTile();
+		model.addStep();
+		model.setScore(board.getTotalScore());
+		if(board.gameOver()) showGameOver();
 	}
 	
 	private void showGameOver() {
