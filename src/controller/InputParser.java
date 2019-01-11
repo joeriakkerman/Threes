@@ -1,26 +1,34 @@
 package controller;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import model.Board;
 import model.Tile;
 
 public class InputParser {
 	
-	public Board readInput() {
+	public Board readInput(String fileName) {
 		int columns = 0, rows = 0;
 		try {
 			List<String> lines = new ArrayList<String>();
-			//BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream("/input.txt")));
-			BufferedReader br = new BufferedReader(new InputStreamReader(Main.class.getResourceAsStream("/input.txt")));
+			String dir = getClass().getClassLoader().getResource("").getFile();
+			dir = new File(dir).getParentFile().getAbsolutePath() + File.separator + "res" + File.separator + fileName + ".txt";
+			File file = new File(dir);
+			if(!file.exists()) return null;
 			
+			BufferedReader br = new BufferedReader(new FileReader(file));
 			
 			String s;
 			while((s = br.readLine()) != null){
@@ -68,7 +76,43 @@ public class InputParser {
 		}
 	}
 	
-	public void save(Tile[] tiles) {
+	public boolean removeFile(String fileName) {
+		String dir = getClass().getClassLoader().getResource("").getFile();
+		dir = new File(dir).getParentFile().getAbsolutePath() + File.separator + "res" + File.separator + fileName + ".txt";
+		File file = new File(dir);
+		if(file.exists()) {
+			file.delete();
+			return true;
+		}else return false;
+	}
+	
+	public String[] getAllFilesFromResources(){
+		String dir = getClass().getClassLoader().getResource("").getFile();
+		dir = new File(dir).getParentFile().getAbsolutePath() + File.separator + "res";
+		File file = new File(dir);
+		String[] files =  file.list(new FilenameFilter() {
+			
+			@Override
+			public boolean accept(File dir, String name) {
+				if(name.endsWith(".txt")) return true;
+				return false;
+			}
+		});
+		
+		for(int i = 0; i < files.length; i++)
+			files[i] = files[i].substring(0, files[i].length() - 4);
+
+		return files;
+	}
+	
+	public boolean fileExists(String fileName) {
+		String dir = getClass().getClassLoader().getResource("").getFile();
+		dir = new File(dir).getParentFile().getAbsolutePath() + File.separator + "res" + File.separator + fileName + ".txt";
+		File file = new File(dir);
+		return file.exists();
+	}
+	
+	public boolean save(String fileName, Tile[] tiles) {
 		String txt = "";
 		for(int i = 0; i < tiles.length; i++) {
 			Tile tile = tiles[i];
@@ -77,12 +121,21 @@ public class InputParser {
 		}
 		
 		try {
-			PrintWriter writer = new PrintWriter(new File(Main.class.getResource("/input.txt").getPath()));
-			writer.print(txt);
-			writer.close();
+			String dir = getClass().getClassLoader().getResource("").getFile();
+			dir = new File(dir).getParentFile().getAbsolutePath() + File.separator + "res" + File.separator + fileName + ".txt";
+			File file = new File(dir);
+			file.createNewFile();
+			FileWriter writer = new FileWriter(file, false);
+			BufferedWriter bw = new BufferedWriter(writer); 
+			bw.write(txt);
+			bw.close();
+			return true;
 		} catch (FileNotFoundException e) {
-			System.err.print("Could not write to file input.txt");
+			JOptionPane.showMessageDialog(null, "Something went wrong when trying to save game", "Oops...", JOptionPane.ERROR_MESSAGE);
+		} catch (IOException e) {
+			JOptionPane.showMessageDialog(null, "Could not save game. Please try again!", "Oops...", JOptionPane.ERROR_MESSAGE);
 		}
+		return false;
 	}
 
 }

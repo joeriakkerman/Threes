@@ -13,8 +13,9 @@ public class GameController {
 	private Mouse mouse;
 	private Keyboard keyboard;
 	
-	public GameController() {
+	public GameController(String fileName) {
 		gameModel = new GameModel();
+		gameModel.setFileName(fileName);
 		
 		mouse = new Mouse(new Mouse.IMouse() {
 			

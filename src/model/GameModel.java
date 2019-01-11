@@ -7,6 +7,16 @@ public class GameModel extends Observable {
 	private int score, steps;
 	private String direction = "";
 	
+	private String fileName;
+	
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	public String getFileName() {
+		return fileName;
+	}
+	
 	public void setScore(int score) {
 		this.score = score;
 		setChanged();

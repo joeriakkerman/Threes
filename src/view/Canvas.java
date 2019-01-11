@@ -21,6 +21,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import controller.InputParser;
+import controller.MainMenuController;
+import controller.SaveGameController;
 import input.Keyboard;
 import input.Mouse;
 import model.Board;
@@ -45,9 +47,11 @@ public class Canvas extends JPanel implements Observer {
 		WIDTH = gd.getDisplayMode().getHeight() / 2;
 		HEIGHT = gd.getDisplayMode().getHeight() / 2;
 		
-		InputParser parser = new InputParser();
-		board = parser.readInput();
-		if(board == null) reset();
+		if(model.getFileName() != null) {
+			InputParser parser = new InputParser();
+			board = parser.readInput(model.getFileName());
+			if(board == null) reset();
+		}else reset();
 		
 		board.addObserver(this);
 		this.model.setScore(board.getTotalScore());
@@ -60,7 +64,17 @@ public class Canvas extends JPanel implements Observer {
 		frame = new JFrame();
 		frame.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e){
-				parser.save(board.getTiles());
+				if(model.getFileName() != null) {
+					InputParser parser = new InputParser();
+					parser.save(model.getFileName(), board.getTiles());
+					frame.dispose();
+					new MainMenuController();
+				}else {
+					int result = JOptionPane.showOptionDialog(null, "Do you want to save this current game?", "Save Game", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+					if(result == JOptionPane.YES_OPTION) {
+						new SaveGameController(frame, board.getTiles());
+					}
+				}
 			}
 		});
 		frame.setLayout(new FlowLayout());
@@ -71,14 +85,14 @@ public class Canvas extends JPanel implements Observer {
 		frame.add(topMenu);
 		frame.add(this);
 		frame.add(infoBar);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.getContentPane().setBackground(Color.BLACK);
 		
 		if(board.gameOver()) showGameOver();
 	}
-
+	
 	@Override
 	public void update(Observable obs, Object obj) {
 		frame.setTitle("Current Score: " + model.getScore());
