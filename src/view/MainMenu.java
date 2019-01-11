@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -44,8 +45,8 @@ public class MainMenu extends JPanel {
 		    public void mouseClicked(MouseEvent evt) {
 		        if (evt.getClickCount() == 2) {
 		            int index = list.locationToIndex(evt.getPoint());
-		            if(index < games.length && index >= 0)
-		            	new GameController(games[index]);
+		            if(index < list.getModel().getSize() && index >= 0)
+		            	new GameController(model.getElementAt(index));
 		            else new GameController(null);
 		            frame.dispose();
 		        }
@@ -61,12 +62,12 @@ public class MainMenu extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				int[] values = list.getSelectedIndices();
+				List<String> values = list.getSelectedValuesList();
 				
 				InputParser parser = new InputParser();
-				for(int i = values.length - 1; i >= 0; i--) {
-					parser.removeFile(model.getElementAt(values[i]));
-					model.removeElementAt(values[i]);
+				for(int i = 0; i < values.size(); i++) {
+					parser.removeFile(values.get(i));
+					model.removeElement(values.get(i));
 				}
 			}
 		});

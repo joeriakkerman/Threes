@@ -50,7 +50,10 @@ public class Canvas extends JPanel implements Observer {
 		if(model.getFileName() != null) {
 			InputParser parser = new InputParser();
 			board = parser.readInput(model.getFileName());
-			if(board == null) reset();
+			if(board == null) {
+				System.out.println("reseet thoughhh");
+				reset();
+			}
 		}else reset();
 		
 		board.addObserver(this);
@@ -113,27 +116,22 @@ public class Canvas extends JPanel implements Observer {
 		
 		Tile[] tiles = board.getTiles();
 		int ts = board.getTileSize(), margin = board.getTileMargin();
+
+		g.setFont(new Font("Arial", Font.BOLD, 40));
+		float fontSize = (float)ts / g.getFontMetrics(g.getFont()).stringWidth("1234");
+	    g.setFont(g.getFont().deriveFont(fontSize * g.getFont().getSize()));
+	    
 		for(int i = 0; i < tiles.length; i++) {
 			g.setColor(tiles[i].getColor());
 			g.fillRect(tiles[i].getX() * ts + margin, tiles[i].getY() * ts + margin, ts - margin*2, ts - margin*2);
 			if(tiles[i].getScore() > 0) {
 				g.setColor(Color.BLACK);
-				g.setFont(new Font("Arial", Font.BOLD, 40));
 				drawCenteredString("" + tiles[i].getScore(), tiles[i].getX() * ts, tiles[i].getY() * ts, ts, ts, g);
 			}
 		}
 	}
 	
 	private void drawCenteredString(String s, int x, int y, int w, int h, Graphics g) {
-//		w /= 4;
-//		float fontSize = 40.0f;
-//	    Font font = g.getFont().deriveFont(fontSize);
-//	    int width = g.getFontMetrics(font).stringWidth(s);
-//	    fontSize = (w / width) * fontSize;
-//	    font = g.getFont().deriveFont(fontSize);
-//	    g.setFont(font);
-//		
-//	    w *= 4;
 	    FontMetrics fm = g.getFontMetrics();
 	    x += (w - fm.stringWidth(s)) / 2;
 	    y += (fm.getAscent() + (h - (fm.getAscent() + fm.getDescent())) / 2);
