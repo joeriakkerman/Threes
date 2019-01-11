@@ -165,7 +165,7 @@ public class Board extends Observable {
 	}
 	
 	public int getTileMargin() {
-		return tileSize / 50;
+		return (tileSize / 50) > 0 ? (tileSize / 50) : 1;
 	}
 	
 }

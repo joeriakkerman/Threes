@@ -77,7 +77,7 @@ public class MainMenu extends JPanel {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				new GameController(null);
+				new DimensionsPicker();
 	            frame.dispose();
 			}
 		});

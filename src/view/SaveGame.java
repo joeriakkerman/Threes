@@ -6,6 +6,8 @@ import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -24,7 +26,7 @@ public class SaveGame extends JPanel {
 	public SaveGame(JFrame parent, SaveGameModel model) {
 		GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice();
 		int width = gd.getDisplayMode().getHeight() / 4;
-		int height = gd.getDisplayMode().getHeight() / 4;
+		int height = gd.getDisplayMode().getHeight() / 8;
 		
 		setPreferredSize(new Dimension(width, height));
 		setSize(width, height);
@@ -50,12 +52,22 @@ public class SaveGame extends JPanel {
 		add(fileName);
 		add(button);
 		
+		frame.addWindowListener(new WindowAdapter() {
+			
+			@Override
+			public void windowClosing(WindowEvent e) {
+				new MainMenuController();
+				frame.dispose();
+				parent.dispose();
+			}
+		});
+		
 		frame.setTitle("Save Game");
 		frame.setLayout(new FlowLayout());
 		frame.setSize(width, height);
 		frame.add(this);
 		frame.setResizable(false);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 	}

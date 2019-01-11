@@ -8,6 +8,7 @@ public class GameModel extends Observable {
 	private String direction = "";
 	
 	private String fileName;
+	private int columns, rows;
 	
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
@@ -15,6 +16,19 @@ public class GameModel extends Observable {
 	
 	public String getFileName() {
 		return fileName;
+	}
+	
+	public void setDimensions(int columns, int rows) {
+		this.columns = columns;
+		this.rows = rows;
+	}
+	
+	public int getRows() {
+		return rows;
+	}
+	
+	public int getColumns() {
+		return columns;
 	}
 	
 	public void setScore(int score) {

@@ -13,10 +13,23 @@ public class GameController {
 	private Mouse mouse;
 	private Keyboard keyboard;
 	
+	private final int DEF_COLUMNS = 4, DEF_ROWS = 4;
+	
 	public GameController(String fileName) {
 		gameModel = new GameModel();
 		gameModel.setFileName(fileName);
-		
+		gameModel.setDimensions(DEF_COLUMNS, DEF_ROWS);
+		init();
+	}
+	
+	public GameController(String fileName, int columns, int rows) {
+		gameModel = new GameModel();
+		gameModel.setFileName(fileName);
+		gameModel.setDimensions(columns, rows);
+		init();
+	}
+	
+	private void init() {
 		mouse = new Mouse(new Mouse.IMouse() {
 			
 			@Override
@@ -53,5 +66,5 @@ public class GameController {
 		
 		new SoundController();
 	}
-
+	
 }

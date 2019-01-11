@@ -73,6 +73,9 @@ public class Canvas extends JPanel implements Observer {
 					int result = JOptionPane.showOptionDialog(null, "Do you want to save this current game?", "Save Game", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
 					if(result == JOptionPane.YES_OPTION) {
 						new SaveGameController(frame, board.getTiles());
+					}else {
+						frame.dispose();
+						new MainMenuController();
 					}
 				}
 			}
@@ -122,6 +125,15 @@ public class Canvas extends JPanel implements Observer {
 	}
 	
 	private void drawCenteredString(String s, int x, int y, int w, int h, Graphics g) {
+//		w /= 4;
+//		float fontSize = 40.0f;
+//	    Font font = g.getFont().deriveFont(fontSize);
+//	    int width = g.getFontMetrics(font).stringWidth(s);
+//	    fontSize = (w / width) * fontSize;
+//	    font = g.getFont().deriveFont(fontSize);
+//	    g.setFont(font);
+//		
+//	    w *= 4;
 	    FontMetrics fm = g.getFontMetrics();
 	    x += (w - fm.stringWidth(s)) / 2;
 	    y += (fm.getAscent() + (h - (fm.getAscent() + fm.getDescent())) / 2);
@@ -162,7 +174,7 @@ public class Canvas extends JPanel implements Observer {
 	}
 	
 	private void reset() {
-		board = new Board(4, 4);
+		board = new Board(model.getColumns(), model.getRows());
 		Random random = new Random();
 		List<Tile> tiles = new ArrayList<Tile>();
 		Tile[] bt = board.getTiles();
